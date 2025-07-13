@@ -10,7 +10,7 @@ console.log('🚀 Building AI Agent Studio Extension...\n');
 const buildSteps = [
     {
         name: 'Clean previous build',
-        command: 'rm -rf out || rmdir /s /q out',
+        command: process.platform === 'win32' ? 'rmdir /s /q out 2>nul' : 'rm -rf out',
         optional: true
     },
     {

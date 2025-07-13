@@ -113,6 +113,8 @@ function registerCommands(context: vscode.ExtensionContext, managers: any) {
         vscode.commands.registerCommand('ai-agent-studio.uninstallFramework', async (framework) => {
             if (framework) {
                 await managers.frameworkManager.uninstallFramework(framework);
+            } else {
+                vscode.window.showErrorMessage('No framework specified for uninstallation');
             }
         }),
 
@@ -247,9 +249,23 @@ function showWelcomeMessage(context: vscode.ExtensionContext) {
 }
 
 async function showFrameworkDetails(framework: any) {
+    if (!framework) {
+        vscode.window.showErrorMessage('No framework data available');
+        return;
+    }
+
+    const displayName = framework.displayName || 'Unknown Framework';
+    const description = framework.description || 'No description available';
+    const languages = framework.languages || [];
+    const dependencies = framework.dependencies || [];
+    const documentationUrl = framework.documentationUrl || '#';
+    const templatePath = framework.templatePath || 'Not specified';
+    const installed = framework.installed || false;
+    const version = framework.version || 'unknown';
+
     const panel = vscode.window.createWebviewPanel(
         'frameworkDetails',
-        `Framework: ${framework.displayName}`,
+        `Framework: ${displayName}`,
         vscode.ViewColumn.Beside,
         { enableScripts: true }
     );
@@ -259,7 +275,7 @@ async function showFrameworkDetails(framework: any) {
         <html>
         <head>
             <meta charset="UTF-8">
-            <title>${framework.displayName} Details</title>
+            <title>${displayName} Details</title>
             <style>
                 body { 
                     font-family: var(--vscode-font-family); 
@@ -292,31 +308,31 @@ async function showFrameworkDetails(framework: any) {
         </head>
         <body>
             <div class="header">
-                <h1>${framework.displayName}</h1>
-                <p>${framework.description}</p>
-                <span class="badge ${framework.installed ? 'status-installed' : 'status-not-installed'}">
-                    ${framework.installed ? `✅ v${framework.version || 'unknown'}` : '❌ Not installed'}
+                <h1>${displayName}</h1>
+                <p>${description}</p>
+                <span class="badge ${installed ? 'status-installed' : 'status-not-installed'}">
+                    ${installed ? `✅ v${version}` : '❌ Not installed'}
                 </span>
             </div>
 
             <div class="section">
                 <h3>Languages</h3>
-                ${framework.languages.map((lang: string) => `<span class="badge">${lang}</span>`).join('')}
+                ${languages.map((lang: string) => `<span class="badge">${lang}</span>`).join('')}
             </div>
 
             <div class="section">
                 <h3>Dependencies</h3>
-                ${framework.dependencies.map((dep: string) => `<span class="badge">${dep}</span>`).join('')}
+                ${dependencies.map((dep: string) => `<span class="badge">${dep}</span>`).join('')}
             </div>
 
             <div class="section">
                 <h3>Documentation</h3>
-                <a href="${framework.documentationUrl}" target="_blank">${framework.documentationUrl}</a>
+                <a href="${documentationUrl}" target="_blank">${documentationUrl}</a>
             </div>
 
             <div class="section">
                 <h3>Template Path</h3>
-                <code>${framework.templatePath}</code>
+                <code>${templatePath}</code>
             </div>
         </body>
         </html>
