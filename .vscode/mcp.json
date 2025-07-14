@@ -1,0 +1,10 @@
+{
+  "servers": {
+    "ai-agent-studio-symindx": {
+      "command": "node",
+      "args": [
+        "/home/user/.codeoss-cloudworkstations/extensions/ai-agent-studio.ai-agent-studio-1.0.0/out/mcp/servers/symindxServer.js"
+      ]
+    }
+  }
+}

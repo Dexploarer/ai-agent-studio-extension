@@ -1,0 +1,37 @@
+{
+  "name": "symindx-emotional-assistant",
+  "version": "1.0.0",
+  "description": "An emotionally intelligent AI assistant built with SYMindX",
+  "main": "emotional-assistant.ts",
+  "scripts": {
+    "dev": "bun run --watch emotional-assistant.ts",
+    "start": "bun run emotional-assistant.ts",
+    "build": "bun build emotional-assistant.ts --outdir ./dist --target bun",
+    "test": "bun test",
+    "lint": "bun run eslint *.ts"
+  },
+  "dependencies": {
+    "@symbaex/symindx": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "eslint": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0"
+  },
+  "engines": {
+    "bun": ">=1.0.0",
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "symindx",
+    "emotional-intelligence",
+    "assistant",
+    "chatbot"
+  ],
+  "author": "AI Agent Studio",
+  "license": "MIT"
+}

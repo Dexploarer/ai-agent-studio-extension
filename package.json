@@ -1,7 +1,7 @@
 {
   "name": "ai-agent-studio",
   "displayName": "AI Agent Studio",
-  "description": "The ultimate extension for developing AI agents with support for all major frameworks including OpenAI Agents SDK, ElizaOS, LangGraph, CrewAI, AutoGen, SmolAgents, and more.",
+  "description": "The ultimate extension for developing AI agents with support for all major frameworks including OpenAI Agents SDK, ElizaOS, LangGraph, CrewAI, AutoGen, SmolAgents, Vercel AI SDK 5 Beta, and more.",
   "version": "1.0.0",
   "publisher": "ai-agent-studio",
   "repository": {
@@ -27,6 +27,10 @@
     "crewai",
     "autogen",
     "smolagents",
+    "vercel-ai-sdk",
+    "vercel",
+    "streaming",
+    "tool-calling",
     "multi-agent",
     "agentic",
     "context7",
@@ -41,7 +45,10 @@
     "onCommand:ai-agent-studio.openAgentDashboard",
     "workspaceContains:**/*.agent.json",
     "workspaceContains:**/*.crew.json",
-    "workspaceContains:**/*.eliza.json"
+    "workspaceContains:**/*.eliza.json",
+    "workspaceContains:**/*.symindx.json",
+    "workspaceContains:**/*symindx.config.ts",
+    "workspaceContains:**/*agents.config.ts"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -75,6 +82,12 @@
         "title": "Search Context7 Documentation",
         "category": "AI Agent Studio",
         "icon": "$(search)"
+      },
+      {
+        "command": "ai-agent-studio.manageMcpServers",
+        "title": "Manage MCP Servers",
+        "category": "AI Agent Studio",
+        "icon": "$(server)"
       },
       {
         "command": "ai-agent-studio.configureFramework",
@@ -135,6 +148,40 @@
           "command": "ai-agent-studio.openAgentDashboard",
           "when": "true"
         }
+      ],
+      "view/title": [
+        {
+          "command": "ai-agent-studio.refreshViews",
+          "when": "view == frameworkStatus",
+          "group": "navigation"
+        },
+        {
+          "command": "ai-agent-studio.installFramework",
+          "when": "view == frameworkStatus",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "ai-agent-studio.installFramework",
+          "when": "view == frameworkStatus && viewItem == availableFramework",
+          "group": "framework@1"
+        },
+        {
+          "command": "ai-agent-studio.configureFramework",
+          "when": "view == frameworkStatus && viewItem == installedFramework",
+          "group": "framework@1"
+        },
+        {
+          "command": "ai-agent-studio.uninstallFramework",
+          "when": "view == frameworkStatus && viewItem == installedFramework",
+          "group": "framework@2"
+        },
+        {
+          "command": "ai-agent-studio.createFromTemplate",
+          "when": "view == frameworkStatus && viewItem == installedFramework",
+          "group": "framework@1"
+        }
       ]
     },
     "viewsContainers": {
@@ -170,6 +217,38 @@
         }
       ]
     },
+    "keybindings": [
+      {
+        "command": "ai-agent-studio.createProject",
+        "key": "ctrl+alt+a ctrl+alt+n",
+        "mac": "cmd+alt+a cmd+alt+n",
+        "when": "true"
+      },
+      {
+        "command": "ai-agent-studio.openAgentDashboard",
+        "key": "ctrl+alt+a ctrl+alt+d",
+        "mac": "cmd+alt+a cmd+alt+d",
+        "when": "true"
+      },
+      {
+        "command": "ai-agent-studio.searchContext7",
+        "key": "ctrl+alt+a ctrl+alt+s",
+        "mac": "cmd+alt+a cmd+alt+s",
+        "when": "true"
+      },
+      {
+        "command": "ai-agent-studio.generateAgent",
+        "key": "ctrl+alt+a ctrl+alt+g",
+        "mac": "cmd+alt+a cmd+alt+g",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "ai-agent-studio.refreshViews",
+        "key": "ctrl+alt+a ctrl+alt+r",
+        "mac": "cmd+alt+a cmd+alt+r",
+        "when": "true"
+      }
+    ],
     "configuration": {
       "title": "AI Agent Studio",
       "properties": {
@@ -185,7 +264,8 @@
             "google-adk",
             "semantic-kernel",
             "langchain",
-            "pydantic-ai"
+            "pydantic-ai",
+            "symindx"
           ],
           "default": "openai-agents-sdk",
           "description": "Default AI agent framework to use for new projects"
@@ -215,44 +295,17 @@
           "default": "",
           "description": "Custom path for agent project templates"
         }
-      ]
+      }
     },
-    "snippets": [
+    "mcpServerDefinitionProviders": [
       {
-        "language": "typescript",
-        "path": "./snippets/typescript.json"
-      },
-      {
-        "language": "javascript",
-        "path": "./snippets/javascript.json"
-      },
-      {
-        "language": "python",
-        "path": "./snippets/python.json"
-      },
-      {
-        "language": "json",
-        "path": "./snippets/json.json"
-      }
-    ],
-    "languages": [
-      {
-        "id": "agent-config",
-        "aliases": ["Agent Config", "agent-config"],
-        "extensions": [".agent.json", ".crew.json", ".eliza.json"],
-        "configuration": "./language-configuration.json"
-      }
-    ],
-    "grammars": [
-      {
-        "language": "agent-config",
-        "scopeName": "source.agent-config",
-        "path": "./syntaxes/agent-config.tmGrammar.json"
+        "id": "ai-agent-studio-mcp",
+        "label": "AI Agent Studio MCP Servers"
       }
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "echo 'Using minimal extension'",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
@@ -262,19 +315,18 @@
     "publish": "vsce publish"
   },
   "devDependencies": {
-    "@types/vscode": "^1.85.0",
     "@types/node": "^18.x",
+    "@types/vscode": "^1.85.0",
+    "@types/ws": "^8.18.1",
     "@typescript-eslint/eslint-plugin": "^6.13.1",
     "@typescript-eslint/parser": "^6.13.1",
+    "@vscode/test-electron": "^2.3.8",
     "eslint": "^8.54.0",
     "typescript": "^5.3.2",
-    "@vscode/test-electron": "^2.3.8",
     "vsce": "^2.15.0"
   },
   "dependencies": {
-    "axios": "^1.6.0",
-    "ws": "^8.14.2",
-    "semver": "^7.5.4",
-    "yaml": "^2.3.4"
+    "@modelcontextprotocol/sdk": "^1.7.0",
+    "zod": "^3.25.76"
   }
 }
