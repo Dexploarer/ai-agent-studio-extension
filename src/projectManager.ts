@@ -423,7 +423,7 @@ coverage/
             'ElizaOS': { package: '@elizaos/core @elizaos/plugin-node', isPython: false },
             'LangGraph': { package: '@langchain/langgraph @langchain/core @langchain/openai', isPython: false },
             'CrewAI': { package: 'crewai', isPython: true },
-            'AutoGen': { package: 'pyautogen', isPython: true },
+            'AutoGen': { package: 'ag2', isPython: true },
             'SYMindX': { package: '@symbaex/symindx', isPython: false },
             'LangChain': { package: 'langchain @langchain/openai', isPython: false },
             'Semantic Kernel': { package: '@microsoft/semantic-kernel', isPython: false },
